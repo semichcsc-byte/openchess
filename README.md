@@ -7,45 +7,73 @@ My build of the [OpenChess](https://concept-bytes.com/products/openchess-pcb) sm
 | Component | Status |
 |-----------|--------|
 | OpenChess PCB v1 | ✅ Have |
-| Arduino Nano RP2040 Connect | ✅ Have |
+| Arduino Nano RP2040 Connect | ✅ Soldered to PCB |
 | 3D printed board (bottom) | ✅ Printed |
 | 3D printed board (top/tiles) | ⬜ TODO |
 | 3D printed chess pieces (32) | ⬜ TODO |
 | Neodymium magnets 10×2mm (36+) | ✅ Ordered |
 | Steel discs 10×1mm (64+) | ✅ Ordered |
-| Soldering (Arduino → PCB) | ⬜ TODO |
+| Soldering (Arduino → PCB) | ✅ Done |
+
+## Software
+
+| Step | Status |
+|------|--------|
+| Sensor_Test firmware | ✅ Uploaded & validated — sensors work! |
+| OpenChess.ino (full game) | ✅ Compiled & uploaded |
+| WiFi configured | ✅ Stockfish AI available |
+| Libraries (NeoPixel v1.14, WiFiNINA) | ✅ Installed |
 
 ## Project Structure
 
 ```
-firmware/       # Arduino firmware & sensor test code
-stl/            # 3D print files (board, pieces, bases)
+firmware/       # Arduino firmware notes
+stl/            # 3D print files info (board, pieces, bases)
 docs/           # Build notes, wiring, BOM
 images/         # Build progress photos
 ```
 
 ## Tech Specs
 
-- **PCB:** 64× Hall effect sensors + 64× RGB LEDs
-- **MCU:** Arduino Nano RP2040 Connect
+- **PCB:** 64× Hall effect sensors (A3144) + 64× RGB LEDs (NeoPixel GRBW)
+- **MCU:** Arduino Nano RP2040 Connect (WiFi + BLE built-in)
 - **Shift register:** 74HC594 (⚠️ NOT 74HC595 — different pinout)
+- **Pin mapping:** NeoPixel=17, ShiftReg SER=2 SRCLK=3 RCLK=4, Sensors=6-13
 - **Board size:** <250×250mm
 - **Magnets:** 10×2mm neodymium in each chess piece
 - **Steel discs:** 10×1mm ferromagnetic under each square
 
+## Game Modes
+
+1. **Human vs Human** — pick up piece (red LED) → valid moves (white LEDs) → place (green flash)
+2. **Human vs AI** — Stockfish engine via WiFi (Easy/Medium/Hard/Expert)
+3. **Sensor Test** — LEDs light up where magnets are detected
+
+Mode selection: power on → 4 white LEDs in center → place piece on one to select.
+
 ## Build Notes
 
-- Magnet polarity matters — flip if sensor doesn't trigger
+- Magnet polarity matters — only south pole triggers A3144 sensors, flip if no detection
 - 10×2mm magnets may be too strong (pieces attract each other) — 8×2mm is an alternative
 - Code is designed for Arduino Nano RP2040 — ESP32 needs pin changes
 - STL files from [MakerWorld](https://makerworld.com/en/models/1256302-openchess-smart-chess-board) (Concept_Bytes)
+- Serial Monitor at 9600 baud for debug
+
+## Firmware Sources
+
+| Source | URL | Platform | Notes |
+|--------|-----|----------|-------|
+| Official (Concept-Bytes) | [GitHub](https://github.com/Concept-Bytes/Open-Chess) | Arduino Nano RP2040 | MIT license, what I'm using |
+| Fork (jojodio) | [GitHub](https://github.com/joojoooo/OpenChess) | ESP32 | Lichess, Web UI, OTA, more features |
+| Build Guide (jojodio) | [Website](https://joojoooo.github.io/OpenChess/) | — | Schematics, wiring, step-by-step |
 
 ## Links
 
 - [OpenChess PCB (Concept Bytes)](https://concept-bytes.com/products/openchess-pcb)
+- [Official Firmware (GitHub)](https://github.com/Concept-Bytes/Open-Chess)
 - [Kickstarter Campaign](https://www.kickstarter.com/projects/conceptbytes/open-chess-a-3d-printable-smart-chess-board)
 - [MakerWorld STLs](https://makerworld.com/en/models/1256302-openchess-smart-chess-board)
-- [Patreon (firmware)](https://www.patreon.com/c/ConceptBytes)
+- [Build Guide & Schematics](https://joojoooo.github.io/OpenChess/)
 
 ## License
 

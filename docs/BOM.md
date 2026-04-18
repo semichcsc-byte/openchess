@@ -37,5 +37,8 @@
 
 | Software | Notes |
 |----------|-------|
-| Arduino IDE | Upload firmware |
-| OpenChess firmware | From Patreon or included with PCB |
+| arduino-cli v1.4.1 | Compile & upload firmware |
+| arduino:mbed_nano v4.5.0 | Board package for RP2040 Connect |
+| Adafruit NeoPixel v1.14.0 | LED library (⚠️ specific version required!) |
+| WiFiNINA v2.0.1 | WiFi library for RP2040 |
+| OpenChess firmware | [GitHub: Concept-Bytes/Open-Chess](https://github.com/Concept-Bytes/Open-Chess) (MIT) |
