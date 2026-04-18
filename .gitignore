@@ -1,0 +1,20 @@
+# OpenChess .gitignore
+
+# Arduino build artifacts
+firmware/**/build/
+firmware/**/*.elf
+firmware/**/*.hex
+firmware/**/*.bin
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+*.code-workspace
+
+# Large binary files (use Git LFS or add manually)
+*.stl
+*.3mf
+*.step
