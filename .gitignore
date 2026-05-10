@@ -19,3 +19,8 @@ Thumbs.db
 *.3mf
 *.step
 upstream-firmware/
+
+# Environment (added by audit 2026-05-10)
+.env
+.env.local
+.env.*.local

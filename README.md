@@ -11,8 +11,8 @@ My build of the [OpenChess](https://concept-bytes.com/products/openchess-pcb) sm
 | 3D printed board (bottom) | ✅ Printed |
 | 3D printed board (top/tiles) | ⬜ TODO |
 | 3D printed chess pieces (32) | ⬜ TODO |
-| Neodymium magnets 10×2mm (36+) | ✅ Ordered |
-| Steel discs 10×1mm (64+) | ✅ Ordered |
+| Neodymium magnets 10×2mm (36+) | ✅ Have |
+| Steel discs 10×1mm (64+) | ✅ Have |
 | Soldering (Arduino → PCB) | ✅ Done |
 
 ## Software
