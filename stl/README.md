@@ -4,7 +4,9 @@ STL/3MF files for the OpenChess board, pieces, and bases.
 
 ## Source
 
-Official files from [MakerWorld — OpenChess Smart Chess Board](https://makerworld.com/en/models/1256302-openchess-smart-chess-board) by Concept_Bytes.
+Official files from [MakerWorld — OpenChess Smart Chess Board](https://makerworld.com/en/models/1256302-openchess-smart-chess-board?from=search#profileId-1279762) by [Concept_Bytes](https://makerworld.com/en/@profileId-1279762) (CC BY 4.0).
+
+The board itself was originally crowdfunded on [Kickstarter](https://www.kickstarter.com/projects/conceptbytes/open-chess-a-3d-printable-smart-chess-board?ref=cc9981) — same designer, same parts.
 
 ## Print Settings (from MakerWorld)
 

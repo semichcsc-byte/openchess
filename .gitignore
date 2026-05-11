@@ -18,3 +18,15 @@ Thumbs.db
 *.stl
 *.3mf
 *.step
+upstream-firmware/
+
+# Environment (added by audit 2026-05-10)
+.env
+.env.local
+.env.*.local
+
+# Belt-and-suspenders: never commit Arduino secrets, even if the
+# upstream-firmware/ ignore is ever removed or someone vendors the
+# firmware in a different folder.
+arduino_secrets.h
+**/arduino_secrets.h
