@@ -155,6 +155,78 @@ No source code changes vs v1.1.2. This release is purely versioning + docs hygie
 
 Rationale: shipping 4 patch releases on the same day was noise on the releases page. v1.2.0 is the canonical install target; the iteration history stays reachable for anyone who wants to read the bug-by-bug story.
 
+## 2026-05-11 (very late) — v1.2.1 castling hint, then v1.2.2 reliability crisis
+
+Played a few games of AI mode to validate v1.2.0. Hit one polish issue (castling silently expects you to move the rook too — easy to miss if you don't play tournament chess) and one *huge* one (red flash on Stockfish API failure way more often than expected).
+
+### v1.2.1: castling visual hint (HvsH only)
+
+When the king moves two squares, Human-vs-Human mode now flashes the rook source square in blinking blue 4 times and lights the destination solid blue, then holds both for an extra 2 seconds. Serial also prints `Castling: move the rook from h1 to f1`. AI mode still does direct board mutation so the hint isn't drawn there yet — deferred to v1.3 with the bot refactor.
+
+Released as **[v1.2.1-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/tag/v1.2.1-rp2040)** (now demoted to pre-release after v1.2.2 superseded it).
+
+### v1.2.2 first attempt: defense in depth (didn't fix the real bug)
+
+User feedback: "API timed out, board flashed red, gave the turn back". Played another game, same thing happened. Built defense in depth:
+
+- 5-attempt retry loop with exponential backoff (was 1 attempt, then 3)
+- Pre-flight `WiFi.status()` check before each attempt
+- `ensureWiFiConnected()` quick reconnect (~8s) if link drops between attempts
+- `reinitWiFiModule()` full `WiFi.end() + WiFi.begin()` cycle after 3 consecutive fails
+- Bounded read loop with 8s inter-byte timeout (no `client.readString()` hangs)
+- Hard 4096-byte response cap
+- Detailed failure classification logs
+- Pre-call breathing pulse (5 forced frames, ~600ms blue) so the user always sees something happening
+- Amber retry pulse during backoff (different colour from blue thinking pulse)
+- Red flash only after all 5 attempts exhausted (was: after 1)
+
+Built a debug-instrumented build with per-step latency telemetry: `[DBG] Calling client.connect(...)`, `[DBG] connect() returned TRUE/FALSE after Xms`, `[DBG] First byte after Xms`, `[DBG] Total request time: Xms`, RSSI per request, etc.
+
+Played another game. **Smoking gun captured**:
+
+```
+[DBG] Pre-flight: WiFi status=3 RSSI=-41 dBm IP=192.168.0.99
+[DBG] Calling client.connect(stockfish.online:443)...
+[DBG] connect() returned FALSE after 9312ms      ← TLS handshake times out
+
+[DBG] connect() returned FALSE after 9515ms      ← attempt 2 also fails (same)
+[DBG] connect() returned FALSE after 9508ms      ← attempt 3 also fails
+[DBG] connect() returned FALSE after 30015ms     ← attempt 4 (after WiFi reset) ALSO fails
+[DBG] connect() returned FALSE after    13ms     ← attempt 5 (NINA wedged now)
+```
+
+5 attempts in a row at -38 to -41 dBm (perfect signal), all hit a ~9.5s TLS handshake timeout. Even the full WiFi module reset doesn't help. Verified `curl https://stockfish.online/...` from the laptop in 0.7s, so the server is fine. Conclusion: the **NINA-W102 firmware 3.0.1 fundamentally cannot complete TLS 1.3 handshakes with Cloudflare-fronted endpoints**. The retry loop just makes it fail more thoroughly.
+
+### v1.2.2 real fix: Cloudflare Worker proxy
+
+Solution: stop trying to do TLS on the constrained device. Put a tiny proxy on Cloudflare that:
+
+1. Accepts plain HTTP from the board (no TLS at all on the NINA)
+2. Forwards to `stockfish.online` over HTTPS server-side
+3. Returns just the JSON response
+
+Wrote a 76-line JavaScript Worker (`worker/proxy.js`), deployed to `https://openchess-proxy.semichcsc.workers.dev` on the free Cloudflare tier (100k requests/day — plenty for a few thousand active boards). Switched `chess_bot.h` from `WiFiSSLClient` to plain `WiFiClient` and pointed at the proxy.
+
+For users who don't trust our public proxy: `worker/README.md` documents the 30-second self-host: `cd worker && npx wrangler deploy`, then change one `#define`. Code is MIT-licensed, runs anywhere.
+
+Verified on hardware — 8 consecutive Stockfish API calls all succeeded on attempt 1:
+
+```
+[DBG] connect() returned TRUE after 304ms     →  Total: 1943ms  →  bestmove e7e5
+[DBG] connect() returned TRUE after  40ms     →  Total: 2049ms  →  bestmove b8c6
+[DBG] connect() returned TRUE after 314ms     →  Total: 2082ms  →  bestmove g8f6
+[DBG] connect() returned TRUE after 700ms     →  Total: 2625ms  →  bestmove h7h6
+[DBG] connect() returned TRUE after  48ms     →  Total: 2646ms  →  bestmove d7d5
+[DBG] connect() returned TRUE after  67ms     →  Total: 2036ms  →  bestmove f6d5
+[DBG] connect() returned TRUE after 145ms     →  Total: 2088ms  →  bestmove c8e6
+```
+
+Was previously **0/5** with the direct HTTPS path. Now **8/8** consecutive. Total request time 1.9-2.6s, indistinguishable from native curl latency.
+
+Released as **[v1.2.2-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/tag/v1.2.2-rp2040) — marked Latest**. v1.2.1 demoted to pre-release.
+
+The defense-in-depth retry loop is still there, just almost never fires now. Belt + braces.
+
 ## Next Steps
 
 - [ ] Print top tiles (64 squares)
