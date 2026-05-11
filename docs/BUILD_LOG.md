@@ -43,6 +43,32 @@ Compile: `Sketch uses 144717 bytes (0%) of program storage space, +337 bytes vs 
 
 Next (Phase 2, optional): chess rules completeness — check detection, pinned pieces, checkmate, castling, en passant. All RP2040-friendly, all in pure C++.
 
+## 2026-05-11 (evening) — Phase 2 + Phase 3 in one go
+
+Decision to keep the Nano RP2040 hardware and serve all Concept-Bytes Kickstarter backers with the same setup. Big batch of changes upstreamed as [PR #11](https://github.com/Concept-Bytes/Open-Chess/pull/11) (+1107 / -282 lines, 9 files).
+
+**Phase 2 — chess rules:**
+- Check / checkmate / stalemate detection with on-board animations
+- Legal-move filtering (no more pinned-piece moves that expose own king)
+- Castling (kingside + queenside, full FIDE rules including king-not-in-check + king-doesn't-pass-through-attacked-square)
+- En passant (pink LED hint on EP target, applyMove removes the right pawn)
+- 50-move rule + insufficient material draw (K-vs-K, K+minor-vs-K)
+- Promotion choice via 4 LEDs on player's back rank (a=Q, b=R, c=B, d=N) in Human-vs-Human; bot mode still auto-Q
+
+**Phase 3 — UX polish:**
+- Sensor debounce: 3 consecutive identical reads required (eliminates the piece-flicker on board setup we saw in serial)
+- AP `OpenChessBoard` shut down when entering non-WiFi modes (saves ~100mA, removes orphan WiFi network)
+- 10 self-tests run at every boot before WiFi setup — PASS/FAIL printed to serial, red flash on failure
+
+**Engine architecture refactor:**
+- New `GameState` struct (castling rights, EP target, halfmove clock, last move)
+- `getLegalMoves`, `isInCheck`, `isSquareAttacked`, `hasAnyLegalMove`, `getGameResult`, `applyMove`, `runSelfTests`
+- All board mutation now goes through `ChessEngine::applyMove` so castling/EP/state can never be missed
+
+**Validation: 10/10 self-tests passing** at boot (initial pawn moves, knight moves, no false check, Fool's Mate, pinned rook, both castlings, castle-in-check forbidden, en-passant, K-vs-K draw, kingside castle layout). Compile: 150679 bytes (0% of 16MB), 44640 bytes RAM (16%). Tested on hardware: chess_moves opens + plays through check + castles correctly; chess_bot still connects via #9 and applies validated moves.
+
+Known follow-ups (kept out of scope): 5-char promotion parsing for bot mode (`e7e8q`), 3-fold repetition (needs position hashing + history).
+
 ## Next Steps
 
 - [ ] Print top tiles (64 squares)

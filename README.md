@@ -1,6 +1,10 @@
-# OpenChess — Smart Chess Board Build
+# OpenChess — Smart Chess Board Build (Nano RP2040 fix-fork)
 
-My build of the [OpenChess](https://concept-bytes.com/products/openchess-pcb) smart chess board by [Concept Bytes](https://www.youtube.com/@conceptbytes).
+My build of the [OpenChess](https://concept-bytes.com/products/openchess-pcb) smart chess board by [Concept Bytes](https://www.youtube.com/@conceptbytes), with bug-fix patches for the **Arduino Nano RP2040 Connect** firmware.
+
+> 🎯 **Kickstarter backer with the Concept-Bytes PCB + Nano RP2040 and AI mode doesn't work?** Or sensors flickering, or "Stockfish API failed"? You're in the right place — see [Firmware Sources](#firmware-sources) below for a patched fork that fixes these issues. The official Concept-Bytes repo has been unmaintained since Aug/2025 (0 PRs merged, 7 open issues).
+>
+> Backed the [OpenChess Kickstarter](https://www.kickstarter.com/projects/conceptbytes/open-chess-a-3d-printable-smart-chess-board?ref=cc9981)? Same hardware, same firmware path — these patches apply to your board too.
 
 ## Hardware
 
@@ -24,6 +28,8 @@ My build of the [OpenChess](https://concept-bytes.com/products/openchess-pcb) sm
 | WiFi configured | ✅ Stockfish AI working |
 | Libraries (NeoPixel v1.14, WiFiNINA) | ✅ Installed |
 | AI mode WiFi AP→STA patch | ✅ Applied — see [PR #9](https://github.com/Concept-Bytes/Open-Chess/pull/9) upstream |
+| 5 quality fixes (Stockfish parser, depth, etc.) | ✅ Applied — see [PR #10](https://github.com/Concept-Bytes/Open-Chess/pull/10) upstream |
+| Full chess rules + UX polish | ✅ Applied — see [PR #11](https://github.com/Concept-Bytes/Open-Chess/pull/11) upstream (check / mate / castling / en passant / draws / promotion choice / debounce / self-tests) |
 
 ## Project Structure
 
@@ -64,8 +70,8 @@ Mode selection: power on → 4 white LEDs in center → place piece on one to se
 
 | Source | URL | Platform | Status (May 2026) | Notes |
 |--------|-----|----------|-------------------|-------|
-| Official (Concept-Bytes) | [GitHub](https://github.com/Concept-Bytes/Open-Chess) | Arduino Nano RP2040 | 🟡 Abandoned — last commit Aug/2025, 0 PRs merged | What I'm using. Needs my [PR #9](https://github.com/Concept-Bytes/Open-Chess/pull/9) (WiFi AP→STA) + [PR #10](https://github.com/Concept-Bytes/Open-Chess/pull/10) (5 quality fixes) for AI mode + correctness. |
-| My fork (with fixes) | [GitHub](https://github.com/semichcsc-byte/Open-Chess) | Arduino Nano RP2040 | 🟢 Has both fixes on `fix/wifi-ap-sta-transition` and `fix/rp2040-quality-pass` | Use until/unless upstream merges PR #9 + #10 |
+| Official (Concept-Bytes) | [GitHub](https://github.com/Concept-Bytes/Open-Chess) | Arduino Nano RP2040 | 🟡 Abandoned — last commit Aug/2025, 0 PRs merged | What I'm using. Needs my [PR #9](https://github.com/Concept-Bytes/Open-Chess/pull/9) (WiFi AP→STA) + [PR #10](https://github.com/Concept-Bytes/Open-Chess/pull/10) (5 quality fixes) + [PR #11](https://github.com/Concept-Bytes/Open-Chess/pull/11) (chess rules + UX). |
+| My fork (with all fixes) | [GitHub](https://github.com/semichcsc-byte/Open-Chess) | Arduino Nano RP2040 | 🟢 3 branches: `fix/wifi-ap-sta-transition`, `fix/rp2040-quality-pass`, `feat/rp2040-rules-and-ux` | Use until/unless upstream merges PRs #9 + #10 + #11 |
 | Fork (joojoooo) | [GitHub](https://github.com/joojoooo/OpenChess) | ESP32 | 🟢 Active — last commit today, 16 stars | Lichess, Web UI, OTA, calibration. Requires Nano ESP32 + jumper wires (PCB pinout doesn't match) |
 | Build Guide (joojoooo) | [Website](https://joojoooo.github.io/OpenChess/) | — | 🟢 Maintained | Schematics, wiring, web flasher |
 
