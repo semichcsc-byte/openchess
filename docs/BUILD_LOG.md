@@ -131,6 +131,18 @@ Verified end-to-end on the physical board: e2-e4 → breathing pulse plays for ~
 
 Serial debug log still has a **row-axis mirror** in chess notation: a move from `e2 to e4` is logged as `e7 to e5`. Internally the firmware is consistent (Stockfish receives the right FEN, the bot's response is applied to the right squares), but the human-readable print is wrong. Same kind of bug as the column mirror fixed in v1.1, fixable in `chess_bot.cpp::processPlayerMove` by changing `Serial.print(8 - fromRow)` to `Serial.print(fromRow + 1)`. Will batch into v1.2 with a couple of other small print/notation cleanups.
 
+## 2026-05-11 (very late) — v1.1.2-rp2040: bot survives Stockfish timeout
+
+Released as [v1.1.2-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/tag/v1.1.2-rp2040).
+
+User report: "left the board for a few minutes, came back, asks to set up the pieces from scratch". Diagnosis: API timeout + accidental reset gesture.
+
+When `makeStockfishRequest` returned an empty response (network blip, `stockfish.online` slow, transient TLS failure) or `parseStockfishResponse` / `parseMove` failed, `botThinking` was correctly cleared but `isWhiteTurn` stayed `false`. The next loop iteration of `chess_bot::update()` saw `isWhiteTurn == false && botThinking == false` and just sat idle, frozen, with no LEDs and no serial activity. The user fiddled with pieces trying to figure out what was wrong, accidentally satisfied the reset gesture (32 pieces in starting position for >1.5 s), and ended up back at the menu requiring a full re-setup.
+
+Fix: all three failure paths in `makeBotMove` now reset `isWhiteTurn = true` so the user can retry the move. Added a brief red flash on rank 8 in the API-no-response case for visual feedback.
+
+Verified by killing the router mid-move; board flashed red on rank 8 and gave turn back to the player so the move could be retried after the network recovered.
+
 ## Next Steps
 
 - [ ] Print top tiles (64 squares)
