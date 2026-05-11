@@ -17,6 +17,18 @@
 - **Compiled & uploaded OpenChess.ino** (full firmware with WiFi + Stockfish AI)
 - All 3 game modes available: Human vs Human, Human vs AI, Sensor Test
 
+## 2026-05-11 — AI mode debug & upstream PR
+
+- Symptom: selecting AI mode "did nothing" — board appeared frozen.
+- Step 1 — wrong selector: serial showed I was placing the piece on `(4,3) = D4 = Game Mode 3 (Coming Soon)`, a placeholder. AI mode is `(3,4) = E5`.
+- Step 2 — real bug found: even on the right square, `chess_bot.cpp::connectToWiFi()` calls `WiFi.begin()` directly without ever shutting down the AP that `WiFiManager::begin()` started in `setup()`. WiFiNINA on the Nano RP2040 Connect (and Nano 33 IoT / MKR WiFi 1010) cannot run AP and STA simultaneously → `WiFi.begin()` silently never returns `WL_CONNECTED`.
+- Patch: `WiFi.disconnect(); WiFi.end(); delay(2000);` before `WiFi.begin()`.
+- Verified: bot connects on attempt 1, gets IP `192.168.0.99`, Stockfish API responds (`bestmove d7d5`), full game playable.
+- Also confirmed Stockfish API is up: `curl https://stockfish.online/api/s/v2.php?...` returns `{"success":true,...}`.
+- Submitted upstream as **PR [Concept-Bytes/Open-Chess#9](https://github.com/Concept-Bytes/Open-Chess/pull/9)** (`fix/wifi-ap-sta-transition`, closes #5).
+- Surveyed forks: 24 total. Only **[joojoooo/OpenChess](https://github.com/joojoooo/OpenChess)** is actively maintained (16 stars, last commit today, ESP32-based, Lichess + Web UI + OTA). [KhachDavid/smart-chessboard](https://github.com/KhachDavid/smart-chessboard) is a stockfish-only fix-fork, abandoned since Sep/2025.
+- Upstream `Concept-Bytes/Open-Chess`: 0 PRs ever merged, last commit Aug/2025, 7 open issues (incl. #5) → effectively abandoned. PR #9 will sit in queue but is searchable for the next person hitting the bug.
+
 ## Next Steps
 
 - [ ] Print top tiles (64 squares)
@@ -24,6 +36,7 @@
 - [ ] Print chess pieces (10×2mm magnet version)
 - [ ] Glue steel discs under each tile (64 pcs)
 - [ ] Glue magnets into chess pieces (32 pcs — south pole facing down!)
-- [ ] Full game test: Human vs Human
-- [ ] Full game test: Human vs AI (Stockfish)
-- [ ] Consider ESP32 migration for jojodio fork features (Lichess, Web UI, OTA)
+- [x] Full game test: Human vs Human
+- [x] Full game test: Human vs AI (Stockfish) — works after WiFi AP→STA patch
+- [ ] Optional: fix `MODE_GAME_3` infinite re-selection loop while piece sits on the placeholder square
+- [ ] Consider ESP32 migration for [joojoooo](https://github.com/joojoooo/OpenChess) fork features (Lichess, Web UI, OTA)
