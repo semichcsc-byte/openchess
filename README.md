@@ -2,7 +2,7 @@
 
 [![Firmware release](https://img.shields.io/github/v/release/semichcsc-byte/Open-Chess?label=firmware&color=brightgreen)](https://github.com/semichcsc-byte/Open-Chess/releases/latest)
 [![Build doc release](https://img.shields.io/github/v/release/semichcsc-byte/openchess?label=build%20doc&color=blue)](https://github.com/semichcsc-byte/openchess/releases/latest)
-[![Self-tests](https://img.shields.io/badge/self--tests-10%2F10-brightgreen)](docs/MANUAL.md#self-tests)
+[![Self-tests](https://img.shields.io/badge/self--tests-10%2F10-brightgreen)](https://github.com/semichcsc-byte/Open-Chess#-self-tests)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 My build of the [OpenChess](https://concept-bytes.com/products/openchess-pcb) smart chess board by [Concept Bytes](https://www.youtube.com/@conceptbytes), with **bug-fix patches** for the Arduino Nano RP2040 Connect firmware.
@@ -13,7 +13,9 @@ My build of the [OpenChess](https://concept-bytes.com/products/openchess-pcb) sm
 >
 > Use my patched firmware — it fixes those issues. The original Concept-Bytes repo has been unmaintained since Aug/2025 (0 PRs ever merged, 7 open issues including the AI mode hang).
 >
-> 🔥 **[Download v1.0.0-rp2040 firmware (.uf2 drag-and-drop)](https://github.com/semichcsc-byte/Open-Chess/releases/latest)**
+> 🔥 **[Download v1.1.0-rp2040 firmware (.uf2 drag-and-drop)](https://github.com/semichcsc-byte/Open-Chess/releases/latest)**
+>
+> v1.1 fixes a **column-mirror bug** that was making all serial-monitor chess notation appear mirrored across the a-h axis on every previous release (including upstream).
 >
 > Backed the [OpenChess Kickstarter](https://www.kickstarter.com/projects/conceptbytes/open-chess-a-3d-printable-smart-chess-board?ref=cc9981)? Same hardware — these fixes apply to your board too.
 
@@ -132,8 +134,9 @@ See **[docs/COMPARISON.md](docs/COMPARISON.md)** for an honest comparison with t
 | `OpenChess.ino` (full game) | ✅ Compiled & uploaded |
 | WiFi + Stockfish AI | ✅ Working |
 | 10 engine self-tests | ✅ 10/10 passing |
-| Patched firmware released | ✅ [v1.0.0-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/latest) |
+| Patched firmware released | ✅ [v1.1.0-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/latest) |
 | 3 upstream PRs filed | ✅ [#9](https://github.com/Concept-Bytes/Open-Chess/pull/9), [#10](https://github.com/Concept-Bytes/Open-Chess/pull/10), [#11](https://github.com/Concept-Bytes/Open-Chess/pull/11) |
+| Column-mirror coordinate bug | ✅ Fixed in v1.1 — driver layer |
 
 ---
 

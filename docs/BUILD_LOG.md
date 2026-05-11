@@ -69,6 +69,50 @@ Decision to keep the Nano RP2040 hardware and serve all Concept-Bytes Kickstarte
 
 Known follow-ups (kept out of scope): 5-char promotion parsing for bot mode (`e7e8q`), 3-fold repetition (needs position hashing + history).
 
+## 2026-05-11 (later, again) — v1.1.0-rp2040: column-mirror bug + UX overhaul
+
+Released as [v1.1.0-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/tag/v1.1.0-rp2040). Two themes:
+
+### 🐛 The column-mirror coordinate bug
+
+During testing of the new 2-selector menu (D5 = HvsH, E4 = AI), the LEDs were showing in D4 / E5 instead. Built an interactive 4-corner calibration sketch to find out why.
+
+Results:
+```
+h1 -> sensor (0, 0)   expected (0, 7)
+a1 -> sensor (0, 7)   expected (0, 0)
+a8 -> sensor (7, 7)   expected (7, 0)
+h8 -> sensor (7, 0)   expected (7, 7)
+```
+
+Diagnosis: **the Concept-Bytes PCB v1 wires file `a` to the rightmost shift-register column** (and file `h` to the leftmost). The upstream firmware never accounted for this. Every chess move printed to serial had its file letter mirrored across the a-h axis. The board worked because the mirror was self-consistent, but:
+- Serial debug logs were misleading (`Player moved P from a7 to a5` actually meant `h7-h5`)
+- Stockfish FEN strings were technically wrong (engine got mirrored positions; replied with valid mirrored moves)
+- Any future Web UI / PGN export would have shown the wrong notation
+
+Fix: encapsulated at the driver layer in [`board_driver.cpp`](https://github.com/semichcsc-byte/Open-Chess/blob/main/board_driver.cpp) — both `readSensors()` and `getPixelIndex()` now mirror `col` to `7 - col`. **All 36 callers (engine, chess_moves, chess_bot, animations) untouched**.
+
+### ✨ UX overhaul (also in v1.1)
+
+- **Setup hint at boot**: white side glows soft white, black side glows red; LEDs go dark as pieces are placed.
+- **Convergent rainbow explosion** when all 32 pieces are in place: 4 collapsing rainbow rings, then 4 diagonal beams from corners, then a white shockwave outward, ending with a triple pulse on the 2 selectors. ~3.5 s.
+- **Simplified 2-option menu**: D5 = HvsH, E4 = AI. Sensor Test removed from menu (still in code).
+- **Sticky menu**: lifting a piece to use as a selector no longer regresses to the setup hint.
+- **Reset gesture**: while playing, all 32 pieces back to starting squares for >1.5 s drops back to the menu.
+- **Boot banner**: now prints firmware version + fork name on serial.
+
+### 📖 Manual rewrite — WiFi setup
+
+Got bitten by my own `arduino_secrets.h` getting overwritten by the upstream placeholder `Kc iphone` / `12345678` (a copy-back accident during development). Rewrote the WiFi setup section in [docs/MANUAL.md](https://github.com/semichcsc-byte/Open-Chess/blob/main/docs/MANUAL.md#wifi--ai-mode-setup) of the firmware repo:
+
+- Prerequisites (2.4 GHz only, special chars in passwords, Arduino CLI install)
+- 6-step quick setup walkthrough
+- Common failure modes (5 GHz, captive portals, WPA Enterprise, phone hotspots, hidden SSIDs)
+- **Troubleshooting table by `WL_*` status code** so users can self-diagnose
+- Security note: don't share compiled `.uf2` because it embeds the WiFi password in plaintext
+
+Verified: 10/10 self-tests passing on hardware.
+
 ## Next Steps
 
 - [ ] Print top tiles (64 squares)
