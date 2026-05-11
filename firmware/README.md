@@ -1,59 +1,90 @@
-# OpenChess Firmware
+# Firmware
 
-Arduino firmware for the OpenChess PCB v1.
+## TL;DR — just give me a working binary
 
-## Source Code
+Grab the latest `.uf2` from the firmware fork:
 
-- **Official repo:** https://github.com/Concept-Bytes/Open-Chess (MIT license)
-- **Community fork (ESP32):** https://github.com/joojoooo/OpenChess (more features)
-- **Build guide & schematics:** https://joojoooo.github.io/OpenChess/
+➡️ **[github.com/semichcsc-byte/Open-Chess/releases/latest](https://github.com/semichcsc-byte/Open-Chess/releases/latest)**
 
-## Setup (arduino-cli)
+Double-tap the white reset button on the Nano RP2040 → drag the `.uf2` file onto the `RPI-RP2` USB drive that appears. Done. See the [Quick Start in the main README](../README.md#quick-start).
+
+## Sources
+
+| Repo | Platform | Status | Notes |
+|------|----------|--------|-------|
+| [Concept-Bytes/Open-Chess](https://github.com/Concept-Bytes/Open-Chess) | Nano RP2040 | 🔴 Abandoned (last commit Aug 2025) | Has known bugs (AI mode hang, Stockfish parser, etc.) |
+| [**semichcsc-byte/Open-Chess**](https://github.com/semichcsc-byte/Open-Chess) | Nano RP2040 | 🟢 Active — what you want | Patched fork with all fixes for the Concept-Bytes PCB + Nano RP2040 setup |
+| [joojoooo/OpenChess](https://github.com/joojoooo/OpenChess) | **ESP32** | 🟢 Active | Different MCU, more features (Lichess, Web UI, OTA) but requires re-soldering with jumper wires |
+
+→ Honest comparison in [`docs/COMPARISON.md`](../docs/COMPARISON.md).
+
+## Compile from source (only needed for AI mode WiFi credentials)
 
 ```bash
-# Install board support
+# 1. Install board support and libraries (one-time)
 arduino-cli core install arduino:mbed_nano
-
-# Install libraries
-arduino-cli lib install "Adafruit NeoPixel@1.14.0"
+arduino-cli lib install "Adafruit NeoPixel"@1.14.0
 arduino-cli lib install WiFiNINA
 
-# Clone firmware
-git clone https://github.com/Concept-Bytes/Open-Chess.git
+# 2. Clone the fork
+git clone https://github.com/semichcsc-byte/Open-Chess.git
+cd Open-Chess
+git checkout v1.0.0-rp2040
 
-# Configure WiFi (edit arduino_secrets.h)
+# 3. Configure WiFi for AI mode (skip if you only want Human-vs-Human)
+cp arduino_secrets_template.h arduino_secrets.h
+# edit arduino_secrets.h with your SSID and password
 
-# Compile sensor test
-arduino-cli compile --fqbn arduino:mbed_nano:nanorp2040connect Open-Chess/Sensor_Test/
+# 4. Compile
+arduino-cli compile --fqbn arduino:mbed_nano:nanorp2040connect .
 
-# Upload sensor test
-arduino-cli upload --fqbn arduino:mbed_nano:nanorp2040connect --port /dev/cu.usbmodemXXXXXX Open-Chess/Sensor_Test/
+# 5. Find your port
+arduino-cli board list
 
-# Compile & upload full firmware (copy all .ino/.h/.cpp to one folder named OpenChess/)
-arduino-cli compile --fqbn arduino:mbed_nano:nanorp2040connect OpenChess/
-arduino-cli upload --fqbn arduino:mbed_nano:nanorp2040connect --port /dev/cu.usbmodemXXXXXX OpenChess/
+# 6. Upload
+arduino-cli upload --fqbn arduino:mbed_nano:nanorp2040connect -p /dev/cu.usbmodemXXX .
 ```
 
-## Pin Mapping
+Alternatively, the standalone sensor test:
 
-| Function | Pin(s) |
-|----------|--------|
-| NeoPixel LED data | 17 |
-| Shift register SER | 2 |
-| Shift register SRCLK | 3 |
-| Shift register RCLK | 4 |
-| Column sensors | 6, 7, 8, 9, 10, 11, 12, 13 |
+```bash
+git clone https://github.com/Concept-Bytes/Open-Chess.git
+arduino-cli compile --fqbn arduino:mbed_nano:nanorp2040connect Open-Chess/Sensor_Test/
+arduino-cli upload  --fqbn arduino:mbed_nano:nanorp2040connect -p /dev/cu.usbmodemXXX Open-Chess/Sensor_Test/
+```
 
-## Dependencies
+## Pin mapping (Concept-Bytes PCB v1 + Nano RP2040)
+
+| Function | Pin |
+|----------|-----|
+| NeoPixel `DIN` | D17 |
+| Shift register `SER` | D2 |
+| Shift register `SRCLK` | D3 |
+| Shift register `RCLK` | D4 |
+| Sensor columns (8×) | D6 D7 D8 D9 D10 D11 D12 D13 |
+
+Shift register IC is **74HC594** — not 74HC595, the pinout is different. ESP32 needs different pins (see [`joojoooo` build guide](https://joojoooo.github.io/OpenChess/)).
+
+## Library versions
 
 | Library | Version | Notes |
 |---------|---------|-------|
-| Adafruit NeoPixel | **1.14.0** | ⚠️ Specific version required for RP2040 |
-| WiFiNINA | 2.0.1 | For Stockfish AI via WiFi |
+| Adafruit NeoPixel | **1.14.0** (pinned) | Required for RP2040 — newer versions had a regression |
+| WiFiNINA | 2.0.1 (or newer) | For AI mode |
+| arduino-cli core `arduino:mbed_nano` | 4.5.0 | Tested |
 
-## Notes
+## Serial monitor
 
-- Shift register: **74HC594** (NOT 74HC595 — different pinout!)
-- If using ESP32 instead of RP2040, pin mapping needs adjustment
-- Serial Monitor: 9600 baud for debug
-- Game mode selection on boot: 4 center LEDs, place piece to choose
+Open at **9600 baud**. The firmware prints:
+
+- A versioned boot banner (`v1.0.0-rp2040`)
+- 10 self-test results (`PASS T1..T10`)
+- WiFi setup logs
+- Every move parsed (`Player moved P from d2 to d4`, `Bot move: e7e5`, etc.)
+- Game state changes (check, mate, draws)
+
+If you see `WARNING: N engine self-tests FAILED` — the firmware is broken, re-flash a clean release.
+
+## Bugs / improvements
+
+File firmware bugs at [the fork repo](https://github.com/semichcsc-byte/Open-Chess/issues), not here.
