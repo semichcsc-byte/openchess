@@ -17,7 +17,7 @@ Thanks for considering a contribution. This repo holds **build documentation** f
 ## What's out of scope
 
 - Firmware source code changes — those go to [the fork](https://github.com/semichcsc-byte/Open-Chess)
-- 3D model changes — STLs come from [MakerWorld](https://makerworld.com/en/models/1256302-openchess-smart-chess-board) (Concept Bytes, CC BY 4.0)
+- 3D model changes — STLs come from [MakerWorld](https://makerworld.com/en/models/1256302-openchess-smart-chess-board?from=search#profileId-1279762) (Concept Bytes, CC BY 4.0)
 - Hardware schematic changes — see [`joojoooo` build guide](https://joojoooo.github.io/OpenChess/) for the canonical schematic
 
 ## How to file an issue

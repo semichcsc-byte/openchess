@@ -198,10 +198,10 @@ openchess/
 ## Links
 
 - 🔗 [OpenChess PCB (Concept Bytes)](https://concept-bytes.com/products/openchess-pcb)
+- 🔗 [Kickstarter campaign](https://www.kickstarter.com/projects/conceptbytes/open-chess-a-3d-printable-smart-chess-board?ref=cc9981) — the original crowdfunding source for the PCB + Arduino kit
+- 🔗 [MakerWorld STLs](https://makerworld.com/en/models/1256302-openchess-smart-chess-board?from=search#profileId-1279762) — official 3D-printable parts (board, tiles, pieces) by Concept_Bytes
 - 🔗 [Official firmware (GitHub)](https://github.com/Concept-Bytes/Open-Chess) — abandoned, see fork below
 - 🔗 [**My patched firmware fork**](https://github.com/semichcsc-byte/Open-Chess) — Nano RP2040 fixes
-- 🔗 [Kickstarter campaign](https://www.kickstarter.com/projects/conceptbytes/open-chess-a-3d-printable-smart-chess-board?ref=cc9981)
-- 🔗 [MakerWorld STLs](https://makerworld.com/en/models/1256302-openchess-smart-chess-board)
 - 🔗 [`joojoooo` build guide & schematics](https://joojoooo.github.io/OpenChess/) — best wiring docs
 - 🔗 [`joojoooo` ESP32 fork](https://github.com/joojoooo/OpenChess) — alternative if you want Lichess + Web UI
 

@@ -88,3 +88,10 @@ If you see `WARNING: N engine self-tests FAILED` — the firmware is broken, re-
 ## Bugs / improvements
 
 File firmware bugs at [the fork repo](https://github.com/semichcsc-byte/Open-Chess/issues), not here.
+
+## Where the hardware comes from
+
+None of this firmware does anything useful without the matching PCB and 3D-printed parts:
+
+- 🔗 **PCB:** [concept-bytes.com/products/openchess-pcb](https://concept-bytes.com/products/openchess-pcb), originally [Kickstarter](https://www.kickstarter.com/projects/conceptbytes/open-chess-a-3d-printable-smart-chess-board?ref=cc9981)
+- 🔗 **3D files:** [MakerWorld — OpenChess Smart Chess Board](https://makerworld.com/en/models/1256302-openchess-smart-chess-board?from=search#profileId-1279762) by Concept_Bytes (CC BY 4.0)

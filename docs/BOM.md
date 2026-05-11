@@ -1,5 +1,7 @@
 # Bill of Materials
 
+For the [OpenChess smart chess board](https://concept-bytes.com/products/openchess-pcb) by Concept Bytes (originally a [Kickstarter campaign](https://www.kickstarter.com/projects/conceptbytes/open-chess-a-3d-printable-smart-chess-board?ref=cc9981) for the 3D-printable PCB-based design).
+
 ## Electronics
 
 | Component | Qty | Status | Notes |
@@ -16,6 +18,8 @@
 | Steel discs 10×1mm (self-adhesive) | 64+ | ✅ Ordered | Amazon.de — B097C4C3SG (25pcs × 3) |
 
 ## 3D Printed Parts
+
+Source: [MakerWorld — OpenChess Smart Chess Board by Concept_Bytes](https://makerworld.com/en/models/1256302-openchess-smart-chess-board?from=search#profileId-1279762) (CC BY 4.0). The makerworld page also links to the [Concept_Bytes profile](https://makerworld.com/en/@profileId-1279762) for related models.
 
 | Part | Qty | Status | Notes |
 |------|-----|--------|-------|

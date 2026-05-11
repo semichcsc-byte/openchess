@@ -427,4 +427,5 @@ The serial output uses standard algebraic notation (`e2`, `d4`, `Qh4#`, …) so 
 - 🐛 **Bug reports / feature requests**: [open an issue on the firmware repo](https://github.com/semichcsc-byte/Open-Chess/issues)
 - 💡 **Build questions**: see [BUILD_LOG.md](BUILD_LOG.md) and [BOM.md](BOM.md), or open an issue here in [`semichcsc-byte/openchess`](https://github.com/semichcsc-byte/openchess/issues)
 - 🌐 **Wiring & schematics**: the [`joojoooo` build guide](https://joojoooo.github.io/OpenChess/) is the best public reference (covers both RP2040 and ESP32 layouts)
-- 📺 **Original videos**: [Concept Bytes on YouTube](https://www.youtube.com/@conceptbytes)
+- � **Hardware & STLs**: PCB from [concept-bytes.com](https://concept-bytes.com/products/openchess-pcb) (originally a [Kickstarter campaign](https://www.kickstarter.com/projects/conceptbytes/open-chess-a-3d-printable-smart-chess-board?ref=cc9981)); 3D files at [MakerWorld](https://makerworld.com/en/models/1256302-openchess-smart-chess-board?from=search#profileId-1279762) (Concept_Bytes, CC BY 4.0)
+- �📺 **Original videos**: [Concept Bytes on YouTube](https://www.youtube.com/@conceptbytes)
