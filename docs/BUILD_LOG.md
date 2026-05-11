@@ -143,6 +143,18 @@ Fix: all three failure paths in `makeBotMove` now reset `isWhiteTurn = true` so 
 
 Verified by killing the router mid-move; board flashed red on rank 8 and gave turn back to the player so the move could be retried after the network recovered.
 
+## 2026-05-11 (end of day) — v1.2.0-rp2040: consolidation
+
+Released as **[v1.2.0-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/tag/v1.2.0-rp2040) — marked Latest** on the firmware repo.
+
+No source code changes vs v1.1.2. This release is purely versioning + docs hygiene:
+
+- CHANGELOG.md rewritten with a single canonical 'first stable release' section listing all features + the 9 bug fixes vs upstream Concept-Bytes
+- 'Detailed iteration history' section preserves links to v1.0.0 → v1.1.2 for back-story readers
+- The four iteration releases marked as **pre-release** on GitHub so a new visitor lands on v1.2.0 directly
+
+Rationale: shipping 4 patch releases on the same day was noise on the releases page. v1.2.0 is the canonical install target; the iteration history stays reachable for anyone who wants to read the bug-by-bug story.
+
 ## Next Steps
 
 - [ ] Print top tiles (64 squares)
