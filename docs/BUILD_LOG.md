@@ -29,6 +29,20 @@
 - Surveyed forks: 24 total. Only **[joojoooo/OpenChess](https://github.com/joojoooo/OpenChess)** is actively maintained (16 stars, last commit today, ESP32-based, Lichess + Web UI + OTA). [KhachDavid/smart-chessboard](https://github.com/KhachDavid/smart-chessboard) is a stockfish-only fix-fork, abandoned since Sep/2025.
 - Upstream `Concept-Bytes/Open-Chess`: 0 PRs ever merged, last commit Aug/2025, 7 open issues (incl. #5) → effectively abandoned. PR #9 will sit in queue but is searchable for the next person hitting the bug.
 
+## 2026-05-11 (later) — RP2040 quality pass (Phase 1)
+
+Kept hardware as-is (Nano RP2040 + Concept-Bytes PCB) and focused on fixes that benefit every user with the same setup. 5 patches in [PR #10](https://github.com/Concept-Bytes/Open-Chess/pull/10):
+
+1. **`stockfish_settings.h`**: `medium()` depth 6 → 10 (Easy and Medium were identical despite different banner)
+2. **`chess_bot.cpp::parseStockfishResponse`**: split HTTP headers from body before scanning for JSON — Cloudflare's `Nel:` and `Report-To:` headers contain JSON-shaped values that the old `indexOf("{")` was grabbing
+3. **`chess_bot.cpp::makeBotMove`**: validate API move locally before mutating state, return turn to player on any failure path (no more frozen `botThinking`)
+4. **`OpenChess.ino` MODE_GAME_3**: replace 3s blind loop with wait-until-piece-lifted gate; eliminates serial spam and lets user recover without reboot
+5. **`chess_engine.h`**: introduce `MAX_MOVES_PER_PIECE` constant; was inconsistent (`moves[27]` in chess_bot, `moves[28]` everywhere else — off-by-one buffer overflow risk)
+
+Compile: `Sketch uses 144717 bytes (0%) of program storage space, +337 bytes vs PR #9 baseline`. Verified by upload + serial monitor: boot clean, mode selection works, no regressions on working paths. Local belt-and-suspenders defence in `.gitignore` against `arduino_secrets.h` even if `upstream-firmware/` ignore is ever removed.
+
+Next (Phase 2, optional): chess rules completeness — check detection, pinned pieces, checkmate, castling, en passant. All RP2040-friendly, all in pure C++.
+
 ## Next Steps
 
 - [ ] Print top tiles (64 squares)

@@ -24,3 +24,9 @@ upstream-firmware/
 .env
 .env.local
 .env.*.local
+
+# Belt-and-suspenders: never commit Arduino secrets, even if the
+# upstream-firmware/ ignore is ever removed or someone vendors the
+# firmware in a different folder.
+arduino_secrets.h
+**/arduino_secrets.h
