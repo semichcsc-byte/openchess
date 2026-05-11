@@ -113,6 +113,24 @@ Got bitten by my own `arduino_secrets.h` getting overwritten by the upstream pla
 
 Verified: 10/10 self-tests passing on hardware.
 
+## 2026-05-11 (night) — v1.1.1-rp2040: bot-thinking pulse + SSL stability
+
+Released as [v1.1.1-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/tag/v1.1.1-rp2040).
+
+### The bug I introduced and then fixed
+
+User asked for a 'bot is thinking' light show. First attempt: bouncing comet on rank 8, animated from inside the SSL request loop, ~20 fps. Result: **"Failed to connect to Stockfish API" on every move**. Took me a serial capture to figure out what happened.
+
+Root cause: each NeoPixel `show()` call disables interrupts for ~2.5 ms (bit-banging the WS2812 protocol). Calling it 20 times per second from inside an active SSL handshake / read corrupts enough TLS records that the connection dies. The animation killed the network it was decorating.
+
+Fix: slow sine-wave breathing on rank 8 with a ~1.5 s period, discretised into 8 brightness buckets, only redraw when the bucket changes. Average ~5 fps, ~95% reduction in NeoPixel writes during the request.
+
+Verified end-to-end on the physical board: e2-e4 → breathing pulse plays for ~2 s → Stockfish responds with `bestmove e7e5` → bot move displayed correctly. Played several more moves including a capture and an invalid-move recovery, all worked.
+
+### Known issue (deferred to v1.2)
+
+Serial debug log still has a **row-axis mirror** in chess notation: a move from `e2 to e4` is logged as `e7 to e5`. Internally the firmware is consistent (Stockfish receives the right FEN, the bot's response is applied to the right squares), but the human-readable print is wrong. Same kind of bug as the column mirror fixed in v1.1, fixable in `chess_bot.cpp::processPlayerMove` by changing `Serial.print(8 - fromRow)` to `Serial.print(fromRow + 1)`. Will batch into v1.2 with a couple of other small print/notation cleanups.
+
 ## Next Steps
 
 - [ ] Print top tiles (64 squares)
