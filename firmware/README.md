@@ -29,7 +29,7 @@ arduino-cli lib install WiFiNINA
 # 2. Clone the fork
 git clone https://github.com/semichcsc-byte/Open-Chess.git
 cd Open-Chess
-git checkout v1.0.0-rp2040
+git checkout v1.3.0-rp2040
 
 # 3. Configure WiFi for AI mode (skip if you only want Human-vs-Human)
 cp arduino_secrets_template.h arduino_secrets.h
@@ -71,15 +71,18 @@ Shift register IC is **74HC594** — not 74HC595, the pinout is different. ESP32
 |---------|---------|-------|
 | Adafruit NeoPixel | **1.14.0** (pinned) | Required for RP2040 — newer versions had a regression |
 | WiFiNINA | 2.0.1 (or newer) | For AI mode |
-| arduino-cli core `arduino:mbed_nano` | 4.5.0 | Tested |
+| arduino-cli core `arduino:mbed_nano` | 4.6.0 | Tested |
 
 ## Serial monitor
 
-Open at **9600 baud**. The firmware prints:
+Open at **9600 baud**. By default the output is quiet — boot banner, the 10
+self-test results (`PASS T1..T10`), a short "How to play" legend, then one line
+per game event (moves, check, castling hints, result). Set `DEBUG_VERBOSE 1`
+(and/or `WIFI_VERBOSE 1`) and re-flash for the full diagnostics:
 
-- A versioned boot banner (`v1.0.0-rp2040`)
+- A versioned boot banner (`v1.3.0-rp2040`)
 - 10 self-test results (`PASS T1..T10`)
-- WiFi setup logs
+- WiFi setup logs (verbose only)
 - Every move parsed (`Player moved P from d2 to d4`, `Bot move: e7e5`, etc.)
 - Game state changes (check, mate, draws)
 

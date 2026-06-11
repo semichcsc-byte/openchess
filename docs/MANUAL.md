@@ -31,7 +31,7 @@ When you power on the board (USB-C to the Arduino, or external 5 V to J1 if you'
 1. **LEDs all off** for a moment while the firmware boots.
 2. **Self-tests run** (see [Self-tests](#self-tests)) — pure software, no LED activity unless something fails.
 3. **WiFi AP `OpenChessBoard` starts** (password `chess123`). You can ignore this; the AP is only useful for a future web UI.
-4. **4 white LEDs light up in the centre of the board** — this is the [mode selection](#mode-selection) menu.
+4. **The board asks you to set up the pieces** — your side glows white, the far side red, and each square goes dark as you place its piece. Once all 32 are down, a rainbow burst plays and the [mode selection](#mode-selection) menu appears.
 
 If the board flashes red 5 times immediately after boot, **the self-tests failed** — your firmware is broken. Re-flash the latest release.
 
@@ -39,42 +39,39 @@ If the board flashes red 5 times immediately after boot, **the self-tests failed
 
 ## Mode selection
 
-After boot, four white LEDs light up in the centre of the board. Each LED is a button: **place any chess piece on top of one to select that mode**.
+Once the board is fully set up (all 32 pieces placed), a rainbow burst plays and
+**two menu LEDs** light up in the centre of the board. Each is a button: **place
+any chess piece on top of one to select that mode**.
 
 ```
    a   b   c   d   e   f   g   h
  8 .   .   .   .   .   .   .   .  8
  7 .   .   .   .   .   .   .   .  7
  6 .   .   .   .   .   .   .   .  6
- 5 .   .   .   ⚪  ⚪  .   .   .  5     ⚪ = white selector LED
- 4 .   .   .   ⚪  ⚪  .   .   .  4
+ 5 .   .   .   ⚪  .   .   .   .  5     ⚪ = white  (Human vs Human)
+ 4 .   .   .   .   🔵  .   .   .  4     🔵 = blue   (Human vs AI)
  3 .   .   .   .   .   .   .   .  3
  2 .   .   .   .   .   .   .   .  2
  1 .   .   .   .   .   .   .   .  1
 ```
 
-| LED | Internal coordinates | Mode |
-|-----|----------------------|------|
-| **D5** | row 3, col 3 | 1 — Human vs Human |
-| **E5** | row 3, col 4 | 2 — Human vs AI (Stockfish) |
-| **D4** | row 4, col 3 | 3 — Coming Soon (placeholder) |
-| **E4** | row 4, col 4 | 4 — Sensor Test |
+| LED | Colour | Mode |
+|-----|--------|------|
+| **D5** (left)  | ⚪ white | Human vs Human |
+| **E4** (right) | 🔵 blue  | Human vs AI (Stockfish) |
 
-> **Tip:** the four selector LEDs form a 2×2 square at the very centre of the board. With the white pieces (rank 1) closer to you, the LEDs are arranged as:
->
-> ```
->  Human vs Human (D5)   Human vs AI (E5)         ← back row of selector
->  Coming Soon    (D4)   Sensor Test (E4)         ← front row of selector
-> ```
+> The two colours let you tell the options apart at a glance: **white = local
+> 2-player**, **blue = play the Stockfish bot**.
 
 After selection:
 
-- The 4 selector LEDs go off
-- A green flash confirms the choice
-- The mode-specific intro animation plays
-- For Human-vs-Human and Human-vs-AI: the board waits for you to set up all 32 pieces in starting position before allowing moves
+- The menu LEDs go off and a green flash confirms the choice.
+- **AI mode** then asks for difficulty (see [Difficulty](#difficulty)) on 4 lit centre squares.
+- The board waits for the 32 pieces to be in the starting position, then play begins.
+- During play, the **side-to-move's back rank gently breathes** so you always know whose turn it is (white for you, red for the opponent / bot's blue "thinking" pulse).
 
-> **Menu colours:** the **Human vs Human** selector is a **white** LED and the **Human vs AI** selector is a **blue** LED, so you can tell them apart at a glance.
+> **Sensor Test / other modes:** the on-board menu now offers just the two main
+> modes. Sensor Test still exists in the firmware for hardware bring-up.
 
 ---
 

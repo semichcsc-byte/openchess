@@ -86,9 +86,19 @@ PASS T1..T10
 
 If you see fewer than 10 passes, the board flashes red 5 times — the firmware is broken, **don't use it for a game**.
 
-### 5. Pick a game mode
+### 5. Set up the pieces and pick a mode
 
-Four white LEDs light up in the centre of the board. See [the user manual](docs/MANUAL.md#mode-selection) for what each one does. **TL;DR**: AI mode is the second LED (E5 square in chess notation).
+Place all 32 pieces in their starting squares (the board guides you: your side
+glows white, the far side red, and each square goes dark as you fill it). When
+the board is complete a rainbow burst plays and **two menu LEDs** light up in
+the centre:
+
+- **D5 (left) — white LED** → Human vs Human
+- **E4 (right) — blue LED** → Human vs AI (Stockfish)
+
+Lift any piece and place it on a lit square to choose. **AI mode then asks for
+difficulty** on 4 lit centre squares (c4 Easy/green, d4 Medium/blue, e4
+Hard/amber, f4 Expert/red). Full layout in [the user manual](docs/MANUAL.md#mode-selection).
 
 ### 6. (Only for AI mode) Configure WiFi
 
@@ -115,6 +125,17 @@ The pre-built `.uf2` does **not** include WiFi credentials. To use AI mode, clon
 
 Plus assorted code-quality fixes (buffer sizes, off-by-one, MODE_GAME_3 spam loop, etc.).
 
+### Added since (v1.3.0-rp2040)
+
+| Improvement | Detail |
+|---|---|
+| 🆕 Runtime AI difficulty | Pick Easy/Medium/Hard/Expert on 4 centre squares — no recompiling |
+| 🆕 "Whose turn" indicator | Side-to-move's back rank gently breathes (white = you, red = opponent) |
+| 🆕 Blue AI menu LED | Human-vs-AI selector is blue, Human-vs-Human white |
+| 🆕 Castling in AI mode | Was impossible before; now works for player + bot with a rook hint |
+| 🆕 Valid FEN after castling | Fixes the "Invalid FEN" turn-stall (rights/EP/clock from live state) |
+| 🆕 Clean serial by default | Verbose debug gated behind `DEBUG_VERBOSE` / `WIFI_VERBOSE` |
+
 See **[docs/COMPARISON.md](docs/COMPARISON.md)** for an honest comparison with the more advanced [`joojoooo/OpenChess`](https://github.com/joojoooo/OpenChess) ESP32 fork.
 
 ---
@@ -138,8 +159,8 @@ See **[docs/COMPARISON.md](docs/COMPARISON.md)** for an honest comparison with t
 | `OpenChess.ino` (full game) | ✅ Compiled & uploaded |
 | WiFi + Stockfish AI | ✅ Working |
 | 10 engine self-tests | ✅ 10/10 passing |
-| Patched firmware released | ✅ [v1.2.0-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/latest) (first stable) |
-| 3 upstream PRs filed | ✅ [#9](https://github.com/Concept-Bytes/Open-Chess/pull/9), [#10](https://github.com/Concept-Bytes/Open-Chess/pull/10), [#11](https://github.com/Concept-Bytes/Open-Chess/pull/11) |
+| Patched firmware released | ✅ [v1.3.0-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/latest) (latest) |
+| 4 upstream PRs filed | ✅ [#9](https://github.com/Concept-Bytes/Open-Chess/pull/9), [#10](https://github.com/Concept-Bytes/Open-Chess/pull/10), [#11](https://github.com/Concept-Bytes/Open-Chess/pull/11), [#12](https://github.com/Concept-Bytes/Open-Chess/pull/12) |
 | Column-mirror coordinate bug | ✅ Fixed in v1.1 — driver layer |
 
 ---
@@ -153,25 +174,25 @@ See **[docs/COMPARISON.md](docs/COMPARISON.md)** for an honest comparison with t
 - **Board size:** < 250×250 mm
 - **Magnets:** 10×2 mm neodymium in each chess piece (south pole down for A3144)
 - **Steel discs:** 10×1 mm ferromagnetic under each square
-- **Serial:** 9600 baud for debug output
-- **Sketch size:** 150 799 bytes (≈ 1 % of 16 MB flash)
-- **RAM:** 44 640 bytes (16 % of 270 KB)
+- **Serial:** 9600 baud; quiet by default (verbose debug behind `DEBUG_VERBOSE` / `WIFI_VERBOSE`)
+- **Sketch size:** ~152 KB (≈ 1 % of 16 MB flash)
+- **RAM:** 44 624 bytes (16 % of 270 KB)
 
 ---
 
 ## Game modes
 
 1. **Human vs Human** — pick up piece (red LED) → valid moves shown (white) → place (green flash). Includes castling, en passant, promotion choice.
-2. **Human vs AI** — Stockfish via WiFi (Easy / Medium / Hard / Expert). Bot move validated locally before applying.
+2. **Human vs AI** — Stockfish via WiFi, with **runtime difficulty** (Easy / Medium / Hard / Expert picked on 4 centre squares). Bot move validated locally before applying.
 3. **Sensor Test** — LEDs light up where a magnet is detected; useful for hardware verification.
 
-Mode selection: power on → 4 white LEDs in the centre → place any chess piece on one to select. Full layout in [the manual](docs/MANUAL.md#mode-selection).
+Mode selection: set up the 32 pieces → 2 menu LEDs appear (D5 white = Human-vs-Human, E4 blue = Human-vs-AI) → place a piece on one to select. A breathing back-rank shows whose turn it is during play. Full layout in [the manual](docs/MANUAL.md#mode-selection).
 
 ---
 
 ## Firmware sources
 
-| Source | Platform | Status (May 2026) | Notes |
+| Source | Platform | Status (June 2026) | Notes |
 |--------|----------|-------------------|-------|
 | [Concept-Bytes/Open-Chess](https://github.com/Concept-Bytes/Open-Chess) (official) | Nano RP2040 | 🔴 Abandoned — last commit Aug 2025, 0 PRs merged | Original. Several known bugs unfixed for 9+ months. |
 | [**semichcsc-byte/Open-Chess**](https://github.com/semichcsc-byte/Open-Chess) (this fork) | Nano RP2040 | 🟢 Active — v1.3.0-rp2040 released | What you want if you have the Concept-Bytes PCB + Nano RP2040. |
