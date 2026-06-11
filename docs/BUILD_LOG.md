@@ -227,6 +227,26 @@ Released as **[v1.2.2-rp2040](https://github.com/semichcsc-byte/Open-Chess/relea
 
 The defense-in-depth retry loop is still there, just almost never fires now. Belt + braces.
 
+## 2026-06-11 — v1.3.0-rp2040: play-testing fixes + UX
+
+Hooked the assembled board up over USB and played full games against the bot.
+Several issues only show up once you actually play; fixed them all and shipped
+[v1.3.0-rp2040](https://github.com/semichcsc-byte/Open-Chess/releases/tag/v1.3.0-rp2040).
+
+- **Runtime AI difficulty**: after picking AI mode, 4 centre squares light up as buttons (c4 Easy/green, d4 Medium/blue, e4 Hard/amber, f4 Expert/red). No more recompiling — was the #1 roadmap item.
+- **"Whose turn" indicator**: the side-to-move's back rank gently breathes (white = you, red = opponent in HvH), mirroring the bot's blue thinking pulse. Asked for after losing track of turns mid-game.
+- **Blue AI selector LED** in the menu (HvH stays white) for at-a-glance distinction.
+- **AI mode castling fixed**: the player literally could not castle in AI mode — `getPossibleMoves` (used there) never generates castling, so the 2-square king move was rejected as illegal. Switched AI mode to `getLegalMoves`, made it move the rook internally for both player and bot, and added the single blue rook-destination hint. Found by play-testing: serial showed `picked up WHITE piece 'K' at f1` → `Invalid move`.
+- **Invalid-FEN-after-castling fixed**: `boardToFEN()` hard-coded `KQkq`. Once anyone castled, that made the FEN illegal and `stockfish.online` replied `{"success":false,"data":"Invalid FEN."}`, which the firmware (correctly) treated as a failure and bounced the turn back to the player — looked like "it's my turn again" after a capture. Now derives castling rights / en-passant / halfmove clock from live `GameState` (the bot side now tracks state too, via a new `updateCastlingRights`).
+- **Stockfish parser hardened**: split HTTP body from headers before scanning for `{`, so Cloudflare's JSON-shaped `Report-To:` header is no longer mistaken for the payload (it recovered before, but fragile).
+- **Mirrored rank notation** in AI-mode serial logs fixed (`8 - row` → `row + 1`) — the long-standing row-axis mirror noted back in v1.1.1.
+- **Light-bleed fix**: lifting a piece now clears the turn-indicator row before drawing legal-move dots (otherwise the king's whole rank stayed lit).
+- **Clean serial by default**: the 10s `uptime` heartbeat and the wall of boot/WiFi debug are gated behind `DEBUG_VERBOSE` / `WIFI_VERBOSE` (both off); a short "How to play" legend prints at boot instead.
+
+Verified on hardware: full AI game including kingside castling (`Castling: move the rook from h1 to f1`, FEN `…/RNBQ1RK1`), bot responses ~2s end-to-end, turn indicator visible. Published to fork `main`, cut the release with the `.uf2`, and opened cumulative PR [Concept-Bytes/Open-Chess#12](https://github.com/Concept-Bytes/Open-Chess/pull/12) on top of #9/#10/#11.
+
+> Toolchain note: built locally with `arduino-cli` + `arduino:mbed_nano@4.6.0`, Adafruit NeoPixel 1.14.0, WiFiNINA. `arduino_secrets.h` stays gitignored — the WiFi password never leaves the machine (gitleaks pre-commit confirms clean).
+
 ## Next Steps
 
 - [ ] Print top tiles (64 squares)

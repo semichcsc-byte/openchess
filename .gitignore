@@ -20,6 +20,9 @@ Thumbs.db
 *.step
 upstream-firmware/
 
+# Local firmware build sketch (symlinks + Arduino build artifacts)
+build-sketch/
+
 # Environment (added by audit 2026-05-10)
 .env
 .env.local

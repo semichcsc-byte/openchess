@@ -74,6 +74,8 @@ After selection:
 - The mode-specific intro animation plays
 - For Human-vs-Human and Human-vs-AI: the board waits for you to set up all 32 pieces in starting position before allowing moves
 
+> **Menu colours:** the **Human vs Human** selector is a **white** LED and the **Human vs AI** selector is a **blue** LED, so you can tell them apart at a glance.
+
 ---
 
 ## Game mode 1 — Human vs Human
@@ -168,9 +170,9 @@ To start a new game after game over: lift all the pieces and re-select a mode (t
 
 ### Starting
 
-1. Place a piece on **E5** (the Human vs AI selector).
-2. The board prints the bot difficulty (Medium = Stockfish depth 10 by default).
-3. The board tears down its own AP, then connects to your home WiFi.
+1. Place a piece on the **Human vs AI** selector square.
+2. Pick the difficulty on the 4 lit centre squares (see [Difficulty](#difficulty)).
+3. The board prints the chosen difficulty, tears down its own AP, then connects to your home WiFi.
    - On success: 3 brief green flashes across the entire board.
    - On failure: 5 red flashes, AI mode is unavailable until next reboot. See [Troubleshooting](#troubleshooting).
 4. Set up the 32 pieces in starting position. Fireworks play. White (you) starts.
@@ -198,16 +200,20 @@ This protects against silent state corruption.
 
 ### Difficulty
 
-By default the bot plays at Medium (Stockfish depth 10, ~25 s timeout). Easy/Hard/Expert are wired in `chess_bot.cpp::ChessBot()` constructor and `stockfish_settings.h`:
+After you select AI mode, the board lights **4 squares on rank 4** (the empty
+centre row) as difficulty buttons. Lift any piece and place it on one to choose:
 
-| Difficulty | Stockfish depth | Timeout |
-|---|---|---|
-| Easy   | 6  | 15 s |
-| Medium | 10 | 25 s |
-| Hard   | 14 | 45 s |
-| Expert | 16 | 60 s |
+| Square | Colour | Difficulty | Stockfish depth | Timeout |
+|---|---|---|---|---|
+| c4 | Green | Easy   | 6  | 15 s |
+| d4 | Blue  | Medium | 10 | 25 s |
+| e4 | Amber | Hard   | 14 | 45 s |
+| f4 | Red   | Expert | 16 | 60 s |
 
-To change difficulty you currently need to edit `chess_bot.cpp` and re-flash. A future revision could pick the difficulty from the 4 selector squares post-mode-select.
+The chosen square blinks 3× to confirm; then lift the piece off and the board
+connects to WiFi and waits for you to set up the starting position. **No
+recompile needed** — the difficulty is picked fresh at the start of every AI
+game. (The presets themselves still live in `stockfish_settings.h`.)
 
 ### What's not yet implemented in AI mode
 
@@ -340,6 +346,20 @@ If any test fails:
 The tests cover: pseudo-legal move generation, legal-move filtering (own-check), Fool's Mate detection, pinned-piece handling, castling rights, castling-in-check forbidden, en-passant, insufficient material, and `applyMove` correctness for castling.
 
 These caught a **real bug during development** (a wrong test fixture) and would catch any regression in the engine before it reaches a game.
+
+---
+
+## Serial output
+
+During normal play the serial monitor (9600 baud) stays quiet by design: you
+get the boot banner, the self-test summary, a short "How to play" legend, and
+then one line per game event (moves, check, castling hints, game result).
+
+The old firmware printed a `DEBUG: Loop running, uptime: N seconds` line every
+10 seconds and a wall of boot internals — that noise is now gated behind a
+single switch. To bring the verbose diagnostics back (board-type detection,
+uptime heartbeat, WiFi internals), set `#define DEBUG_VERBOSE 1` near the top
+of `OpenChess.ino` and re-flash.
 
 ---
 
