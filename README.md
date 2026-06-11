@@ -13,13 +13,15 @@ My build of the [OpenChess](https://concept-bytes.com/products/openchess-pcb) sm
 >
 > Use my patched firmware — it fixes those issues. The original Concept-Bytes repo has been unmaintained since Aug/2025 (0 PRs ever merged, 7 open issues including the AI mode hang).
 >
-> 🔥 **[Download v1.4.0-rp2040 firmware (.uf2 drag-and-drop)](https://github.com/semichcsc-byte/Open-Chess/releases/latest)** — AI mode finally reliable
+> 🔥 **[Download v1.4.1-rp2040 firmware (.uf2 drag-and-drop)](https://github.com/semichcsc-byte/Open-Chess/releases/latest)** — AI mode finally reliable
 >
 > v1.2.2 routes the Stockfish API through a [Cloudflare Worker proxy](https://github.com/semichcsc-byte/Open-Chess/tree/main/worker) so the board talks plain HTTP instead of HTTPS — works around a fundamental TLS bug in the NINA-W102 firmware that was causing 100% Stockfish failure rates with Cloudflare-fronted endpoints. Verified: 8 consecutive API calls succeeded on first attempt at ~2s end-to-end.
 >
 > **New in v1.3.0:** runtime AI difficulty (pick Easy/Medium/Hard/Expert on 4 centre squares), a "whose turn" breathing indicator, a blue Human-vs-AI menu LED, working castling in AI mode, a fix for the "Invalid FEN" turn-stall after castling, and a clean serial monitor by default.
 >
 > **New in v1.4.0:** **persistent games** — the board saves after every move and silently resumes after a power-off (play, switch off, come back days later and continue), until you reset by re-placing all 32 pieces.
+>
+> **New in v1.4.1:** **checkmate/draw detection in AI mode** (it used to never end the game against the bot) and **endless checkmate fireworks** until you lift a piece.
 >
 > Also includes: column-mirror coordinate fix, full FIDE chess rules, breathing-pulse-while-thinking, castling visual hint in HvsH, 5-attempt retry with NINA reset and amber retry pulse as belt-and-braces.
 >
@@ -59,9 +61,9 @@ If you just want a working board, scroll to **[Quick start](#quick-start)**. If 
 
 ### 1. Download the firmware
 
-[![Latest release](https://img.shields.io/github/v/release/semichcsc-byte/Open-Chess?label=v1.4.0-rp2040)](https://github.com/semichcsc-byte/Open-Chess/releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/semichcsc-byte/Open-Chess?label=v1.4.1-rp2040)](https://github.com/semichcsc-byte/Open-Chess/releases/latest)
 
-Grab `OpenChess-v1.4.0-rp2040.uf2` (~325 KB).
+Grab `OpenChess-v1.4.1-rp2040.uf2` (~325 KB).
 
 ### 2. Put the board in bootloader mode
 
@@ -78,7 +80,7 @@ At **9600 baud**. You should see:
 ```
 ================================================
          OpenChess Starting Up
-         Firmware: v1.4.0-rp2040
+         Firmware: v1.4.1-rp2040
          Fork:    semichcsc-byte/Open-Chess
 ================================================
 === ChessEngine self-tests ===
@@ -198,7 +200,7 @@ Mode selection: set up the 32 pieces → 2 menu LEDs appear (D5 white = Human-vs
 | Source | Platform | Status (June 2026) | Notes |
 |--------|----------|-------------------|-------|
 | [Concept-Bytes/Open-Chess](https://github.com/Concept-Bytes/Open-Chess) (official) | Nano RP2040 | 🔴 Abandoned — last commit Aug 2025, 0 PRs merged | Original. Several known bugs unfixed for 9+ months. |
-| [**semichcsc-byte/Open-Chess**](https://github.com/semichcsc-byte/Open-Chess) (this fork) | Nano RP2040 | 🟢 Active — v1.4.0-rp2040 released | What you want if you have the Concept-Bytes PCB + Nano RP2040. |
+| [**semichcsc-byte/Open-Chess**](https://github.com/semichcsc-byte/Open-Chess) (this fork) | Nano RP2040 | 🟢 Active — v1.4.1-rp2040 released | What you want if you have the Concept-Bytes PCB + Nano RP2040. |
 | [joojoooo/OpenChess](https://github.com/joojoooo/OpenChess) | **ESP32** (different MCU!) | 🟢 Active — 16★, last commit May 2026 | More features (Lichess online, Web UI, OTA, calibration), but requires re-soldering with jumper wires. |
 | [joojoooo build guide](https://joojoooo.github.io/OpenChess/) | — | 🟢 Maintained | Best schematic + wiring documentation for both platforms. |
 

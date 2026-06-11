@@ -1,4 +1,4 @@
-# OpenChess User Manual (v1.4.0-rp2040 firmware)
+# OpenChess User Manual (v1.4.1-rp2040 firmware)
 
 This is the user manual for the **patched [`semichcsc-byte/Open-Chess`](https://github.com/semichcsc-byte/Open-Chess) firmware** running on a Concept-Bytes PCB + Arduino Nano RP2040 Connect.
 
@@ -150,10 +150,12 @@ When your pawn reaches the back rank:
 ### Check, checkmate, draws
 
 - **Check:** the king square blinks red 3 times. The next move must remove the check (block, capture, or move king).
-- **Checkmate:** game over animation plays. White wins → entire board glows white. Black wins → red pulse 3×.
+- **Checkmate:** the board plays a **continuous fireworks** celebration until you lift a piece, and prints `CHECKMATE - WHITE/BLACK WINS` on the serial monitor.
 - **Stalemate / 50-move rule / insufficient material:** fireworks animation. The board prints `DRAW - <reason>` on the serial monitor.
 
-To start a new game after game over: lift all the pieces and re-select a mode (the board auto-resets state).
+> **Both game modes** detect checkmate and draws — including **Human-vs-AI** (earlier firmware only ended Human-vs-Human games; against the bot it would keep asking for moves forever).
+
+To start a new game after game over: lift a piece (the fireworks stop), then re-place all 32 pieces in the starting position to reset.
 
 > **Not yet implemented:** 3-fold repetition (would require position hashing + history; possible but uses more RAM).
 
