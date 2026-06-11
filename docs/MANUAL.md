@@ -1,4 +1,4 @@
-# OpenChess User Manual (v1.0.0-rp2040 firmware)
+# OpenChess User Manual (v1.4.0-rp2040 firmware)
 
 This is the user manual for the **patched [`semichcsc-byte/Open-Chess`](https://github.com/semichcsc-byte/Open-Chess) firmware** running on a Concept-Bytes PCB + Arduino Nano RP2040 Connect.
 
@@ -18,6 +18,7 @@ If you're reading this with the original Concept-Bytes firmware, several feature
 - [Game mode 4 — Sensor Test](#game-mode-4--sensor-test)
 - [WiFi & AI mode setup](#wifi--ai-mode-setup)
 - [Self-tests](#self-tests)
+- [Saving & resuming games](#saving--resuming-games)
 - [Troubleshooting](#troubleshooting)
 - [Resetting the board](#resetting-the-board)
 - [Coordinate system](#coordinate-system)
@@ -360,6 +361,30 @@ of `OpenChess.ino` and re-flash.
 
 ---
 
+## Saving & resuming games
+
+*(v1.4.0+)* The board automatically **saves your game** to internal flash after
+every move — the full position, whose turn it is, castling rights, en-passant
+state, and the mode/difficulty. This means:
+
+- **Power off mid-game and come back later** (hours or days). On the next boot
+  the board **silently resumes** exactly where you left off — no resume menu,
+  no "set up the pieces" prompt. In AI mode it reconnects to WiFi automatically.
+- The saved game **stays active until you reset** by placing all 32 pieces back
+  on their starting squares for ~1.5 s (the [reset gesture](#resetting-the-board)).
+  That clears the save and returns to the menu for a new game.
+- Works in both Human-vs-Human and Human-vs-AI.
+
+Notes:
+
+- The save lives in a reserved region of flash, so it survives a power cycle.
+  **Re-flashing the firmware** (a new `.uf2`) may erase it — that only happens
+  when you update, not during normal play.
+- Leave the physical pieces where they are when you power off; on resume the
+  board expects the board to match the saved position.
+
+---
+
 ## Troubleshooting
 
 ### "AI mode does nothing when I select it"
@@ -412,8 +437,9 @@ For mode 3 (Coming Soon), just lift the piece — the patched firmware returns t
 
 | What you want | How |
 |---|---|
-| Restart current game | Lift all pieces, set up starting position again. The state auto-resets after game over. |
-| Force back to mode selection | Power-cycle (unplug + replug USB). |
+| End the game / back to menu | Place all 32 pieces on their starting squares and hold ~1.5 s (the reset gesture). This also **clears the saved game**. |
+| Restart current game | After game over, set up the starting position again. |
+| Resume after power-off | Just power back on — the board resumes automatically (see [Saving & resuming games](#saving--resuming-games)). A power-cycle no longer returns to the menu. |
 | Clear all state and re-flash firmware | Double-tap reset button → drag fresh `.uf2` to `RPI-RP2` drive. |
 | Reset to factory firmware | Flash the original Concept-Bytes binary (not recommended — known bugs). |
 
